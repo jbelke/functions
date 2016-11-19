@@ -60,7 +60,7 @@ func (s *Server) primeCache() {
 		return
 	}
 	for _, app := range apps {
-		routes, err := s.loadroutes(app.Name)
+		routes, err := s.Datastore.GetRoutesByApp(app.Name, &models.RouteFilter{AppName: app.Name})
 		if err != nil {
 			logrus.WithError(err).WithField("appName", app.Name).Error("cannot prime cache - could not load routes")
 			continue
@@ -146,18 +146,6 @@ func (s *Server) cacheget(appname, path string) (*models.Route, bool) {
 	route, ok := cache.Get(path)
 	s.mu.Unlock()
 	return route, ok
-}
-
-func (s *Server) cachedroutes(appname string) []*models.Route {
-	s.mu.Lock()
-	cache, ok := s.hotroutes[appname]
-	if !ok {
-		s.mu.Unlock()
-		return nil
-	}
-	routes := cache.Routes()
-	s.mu.Unlock()
-	return routes
 }
 
 func (s *Server) refreshcache(appname string, route *models.Route, entries int) {

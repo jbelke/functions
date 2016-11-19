@@ -34,16 +34,6 @@ func New(maxentries int) *Cache {
 	}
 }
 
-// Routes is an ordered slice with the hottest routes at the beginning, so to
-// increase the likelihood of matching with incoming requests.
-func (c *Cache) Routes() []*models.Route {
-	if c.cache == nil {
-		return []*models.Route{}
-	}
-
-	return c.values
-}
-
 // Refresh updates internal linkedlist either adding a new route to the front,
 // or moving it to the front when used. It will discard seldom used routes.
 func (c *Cache) Refresh(route *models.Route) {
